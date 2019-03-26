@@ -1,4 +1,5 @@
 pngpack.c
+example.png
 build/
 *.so
 
