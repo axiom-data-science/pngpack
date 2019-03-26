@@ -1,0 +1,5 @@
+pngpack.c
+build/
+*.so
+
+.idea/
