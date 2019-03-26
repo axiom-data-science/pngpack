@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../pngpack.h"
+#include "pngpack.h"
 
 int main() {
     size_t width = 3;

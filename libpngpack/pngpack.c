@@ -88,7 +88,7 @@ bool pngpack_write(struct pngpack *pp, char *path) {
      * 8 fields per channel for name, min, max, stddev, mean, scale, offset, signed
      */
     size_t metadata_fields_length = 4;
-    metadata_fields_length += 7 * pp->channels_length;
+    metadata_fields_length += 8 * pp->channels_length;
 
     struct png_text_struct *metadata_fields = malloc(metadata_fields_length * sizeof(struct png_text_struct));
 

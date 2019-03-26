@@ -9,8 +9,13 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 setup(name='pngpack',
       version='1.0.0',
       packages=find_packages(),
-      ext_modules=cythonize(Extension("pngpack",
-                                      sources=["pngpack.pyx", "../libpngpack/pngpack.c"],
-                                      libraries=["png"],
-                                      library_dirs=["~/dev/opt/homebrew/opt/libpng/lib/"])),
+      ext_modules=cythonize(
+          [
+              Extension("pngpack",
+                        sources=["pngpack.pyx", "../libpngpack/pngpack.c"],
+                        libraries=["png"],
+                        library_dirs=["~/dev/opt/homebrew/opt/libpng/lib/"]),
+          ],
+          compiler_directives={'language_level': '3'},
+      ),
       zip_safe=False)
