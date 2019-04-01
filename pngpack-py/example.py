@@ -10,6 +10,7 @@ data = [1, 1, 3,
         1, 2, 1,
         3, 1, 1]
 channel = pngpack.PngpackChannel('temp', data)
+channel.add_textfield("units", "fake_degrees")
 
 pp.add_channel(channel)
 

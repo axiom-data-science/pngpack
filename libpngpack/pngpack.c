@@ -10,10 +10,15 @@
 
 #define PNGPACK_BITS 16
 
-struct _pngpack_stats pngpack_stats_calculate(const double *data, size_t data_length);
-void pngpack_channel_pack(struct pngpack_channel *channel);
-struct png_text_struct pngpack_png_text_struct_new(char *key, char *text);
-void pngpack_png_text_struct_free(struct png_text_struct *metadata);
+static struct _pngpack_stats pngpack_stats_calculate(const double *data, size_t data_length);
+static void pngpack_channel_pack(struct pngpack_channel *channel);
+static void _pngpack_channel_add_default_textfields(struct pngpack_channel *channel);
+static struct _pngpack_textfield_container* _pngpack_textfield_container_new();
+static void _pngpack_textfield_container_free(struct _pngpack_textfield_container *container);
+static void _pngpack_textfield_container_add_textfield(struct _pngpack_textfield_container *container, char *key, char *value);
+
+static struct png_text_struct pngpack_png_text_struct_new(char *key, char *text);
+static void pngpack_png_text_struct_free(struct png_text_struct *metadata);
 
 
 struct pngpack* pngpack_new(size_t width, size_t height, struct pngpack_bounds bounds, char *text_namespace) {
@@ -85,10 +90,13 @@ bool pngpack_write(struct pngpack *pp, char *path) {
 
     /**
      * 4 fields for bounds
-     * 8 fields per channel for name, min, max, stddev, mean, scale, offset, signed
+     * plus any fields for each channel (including any default fields, such as packed attributes and stats)
      */
     size_t metadata_fields_length = 4;
-    metadata_fields_length += 8 * pp->channels_length;
+
+    for (size_t c = 0; c < pp->channels_length; c += 1) {
+        metadata_fields_length += pp->channels[c]->textfields->length;
+    }
 
     struct png_text_struct *metadata_fields = malloc(metadata_fields_length * sizeof(struct png_text_struct));
 
@@ -129,53 +137,16 @@ bool pngpack_write(struct pngpack *pp, char *path) {
      */
 
     for (size_t c = 0; c < pp->channels_length; c += 1) {
-        asprintf(&metadata_key, "%s:channel:%lu:name", pp->text_namespace, c);
-        asprintf(&metadata_text, "%s", pp->channels[c]->name);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
+        struct pngpack_channel *channel = pp->channels[c];
 
-        asprintf(&metadata_key, "%s:channel:%lu:pack:scale", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->packed.scale_factor);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
+        struct _pngpack_textfield *textfield = channel->textfields->first;
+        for (size_t i = 0; i < channel->textfields->length; i += 1) {
+            asprintf(&metadata_key, "%s:channel:%lu:%s", pp->text_namespace, c, textfield->key);
+            metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, textfield->value);
+            free(metadata_key), metadata_key = NULL;
 
-        asprintf(&metadata_key, "%s:channel:%lu:pack:offset", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->packed.add_offset);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
-
-        asprintf(&metadata_key, "%s:channel:%lu:pack:signed", pp->text_namespace, c);
-        asprintf(&metadata_text, "%d", pp->channels[c]->packed.is_signed ? 1 : 0);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
-
-        asprintf(&metadata_key, "%s:channel:%lu:stats:min", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->stats.min);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
-
-        asprintf(&metadata_key, "%s:channel:%lu:stats:max", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->stats.max);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
-
-        asprintf(&metadata_key, "%s:channel:%lu:stats:stddev", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->stats.stddev);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
-
-        asprintf(&metadata_key, "%s:channel:%lu:stats:mean", pp->text_namespace, c);
-        asprintf(&metadata_text, "%.*f", DBL_DECIMAL_DIG, pp->channels[c]->stats.mean);
-        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, metadata_text);
-        free(metadata_text), metadata_text = NULL;
-        free(metadata_key), metadata_key = NULL;
+            textfield = textfield->next;
+        }
     }
 
     png_set_text(png_ptr, info_ptr, metadata_fields, (int)metadata_fields_length);
@@ -233,10 +204,12 @@ error:
 struct pngpack_channel* pngpack_channel_new(char *name, double *data, size_t data_length) {
     struct pngpack_channel *channel = malloc(sizeof(struct pngpack_channel));
     channel->name = strdup(name);
+    channel->textfields = _pngpack_textfield_container_new();
     channel->data = data;
     channel->data_length = data_length;
     channel->stats = pngpack_stats_calculate(data, data_length);
     pngpack_channel_pack(channel);
+    _pngpack_channel_add_default_textfields(channel);
     return channel;
 }
 
@@ -264,6 +237,7 @@ void pngpack_channel_pack(struct pngpack_channel *channel) {
 }
 
 void pngpack_channel_free(struct pngpack_channel *channel) {
+    _pngpack_textfield_container_free(channel->textfields);
     free(channel->packed.data);
     free(channel->name);
     free(channel);
@@ -301,6 +275,100 @@ struct _pngpack_stats pngpack_stats_calculate(const double *data, size_t data_le
 
     return stats;
 }
+
+/**
+ * Add fields related to the channel including name, packed attributes, and stats
+ */
+void _pngpack_channel_add_default_textfields(struct pngpack_channel *channel) {
+    char *value = NULL;
+
+    pngpack_channel_add_textfield(channel, "name", channel->name);
+
+    /*
+     * Packed attributes
+     */
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->packed.scale_factor);
+    pngpack_channel_add_textfield(channel, "pack:scale", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->packed.add_offset);
+    pngpack_channel_add_textfield(channel, "pack:offset", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%d", channel->packed.is_signed ? 1 : 0);
+    pngpack_channel_add_textfield(channel, "pack:signed", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%u", channel->packed.nan);
+    pngpack_channel_add_textfield(channel, "pack:nan", value);
+    free(value), value = NULL;
+
+    /*
+     * Stats
+     */
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->stats.min);
+    pngpack_channel_add_textfield(channel, "stats:min", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->stats.max);
+    pngpack_channel_add_textfield(channel, "stats:max", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->stats.stddev);
+    pngpack_channel_add_textfield(channel, "stats:stddev", value);
+    free(value), value = NULL;
+
+    asprintf(&value, "%.*f", DBL_DECIMAL_DIG, channel->stats.mean);
+    pngpack_channel_add_textfield(channel, "stats:mean", value);
+    free(value), value = NULL;
+}
+
+void pngpack_channel_add_textfield(struct pngpack_channel *channel, char *key, char *value) {
+    _pngpack_textfield_container_add_textfield(channel->textfields, key, value);
+}
+
+
+struct _pngpack_textfield_container* _pngpack_textfield_container_new() {
+    struct _pngpack_textfield_container *container = malloc(sizeof(struct _pngpack_textfield_container));
+    container->first = NULL;
+    container->length = 0;
+    return container;
+}
+
+void _pngpack_textfield_container_free(struct _pngpack_textfield_container *container) {
+    for (size_t i = 0; i < container->length; i += 1) {
+        struct _pngpack_textfield *field = container->first;
+        container->first = field->next;
+
+        free(field->key);
+        free(field->value);
+        free(field);
+    }
+    assert(container->first == NULL);
+    free(container);
+}
+
+void _pngpack_textfield_container_add_textfield(struct _pngpack_textfield_container *container, char *key, char *value) {
+    struct _pngpack_textfield *field = malloc(sizeof(struct _pngpack_textfield));
+
+    field->key = strdup(key);
+    field->value = strdup(value);
+
+    field->next = container->first;
+    container->first = field;
+    container->length += 1;
+}
+
+
+/*
+ * Helpers
+ */
+
+/**
+ * libpng's png_text_struct helper
+ */
 
 struct png_text_struct pngpack_png_text_struct_new(char *key, char *text) {
     struct png_text_struct metadata;

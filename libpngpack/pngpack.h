@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 
 struct _pngpack_stats {
     double min;
@@ -17,8 +18,19 @@ struct _pngpack_packed {
     uint16_t *data;
     double scale_factor;
     double add_offset;
-    double nan;
+    uint16_t nan;
     bool is_signed;
+};
+
+struct _pngpack_textfield {
+    char *key;
+    char *value;
+    struct _pngpack_textfield *next;
+};
+
+struct _pngpack_textfield_container {
+    struct _pngpack_textfield *first;
+    size_t length;
 };
 
 struct pngpack_channel {
@@ -27,6 +39,7 @@ struct pngpack_channel {
     size_t data_length;
     struct _pngpack_stats stats;
     struct _pngpack_packed packed;
+    struct _pngpack_textfield_container *textfields;
 };
 
 struct pngpack_bounds {
@@ -70,5 +83,7 @@ bool pngpack_write(struct pngpack *pp, char *path);
 struct pngpack_channel* pngpack_channel_new(char *name, double *data, size_t data_length);
 
 void pngpack_channel_free(struct pngpack_channel *channel);
+
+void pngpack_channel_add_textfield(struct pngpack_channel *channel, char *key, char *value);
 
 #endif
