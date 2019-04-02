@@ -8,7 +8,7 @@ int main() {
     size_t height = 3;
     size_t len = width * height;
 
-    struct pngpack_bounds bounds = {.min_w = 0, .max_w = 360, .min_h = -180, .max_h = 180};
+    struct pngpack_bounds bounds = {.min_w = -180, .max_w = 180, .min_h = -90, .max_h = 90};
 
     struct pngpack *pp = pngpack_new(width, height, bounds, "pp-example");
 
@@ -16,6 +16,7 @@ int main() {
                          72, 85, 80,
                          85, 87, 75};
     struct pngpack_channel *ch1 = pngpack_channel_new("temps", ch1_data, len);
+    pngpack_channel_add_textfield(ch1, "units", "degrees");
 
     pngpack_add_channel(pp, ch1);
 

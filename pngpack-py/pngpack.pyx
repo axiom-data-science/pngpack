@@ -8,6 +8,15 @@ from cpython cimport array
 import array
 
 cdef class PngpackBounds:
+    """
+    An object representing the bounds of a packed PNG file.
+    These bounds represent the top-left and bottom-right pixels
+    of the image, and allow you to give context to the packed data.
+
+    For example, if the packed data represented temperatures over a grid,
+    the bounds may represent the max/min lat/lon of the grid.
+    """
+
     cdef cpngpack.pngpack_bounds _c_bounds
 
     def __init__(self, double min_w, double max_w, double min_h, double max_h):
@@ -24,6 +33,12 @@ cdef class PngpackChannel:
     cdef bint _pngpack
 
     def __init__(self, str name, data: Iterable):
+        """
+        Create a channel to be added to a Pngpack object.
+
+        :param name: A name/label to be stored as metadata
+        :param data: The data, as floating point values. This data will be copied.
+        """
         pass
 
     def __cinit__(self, str name, data: Iterable):
@@ -40,12 +55,28 @@ cdef class PngpackChannel:
             cpngpack.pngpack_channel_free(self._c_channel)
 
     def add_textfield(self, str name, str value):
+        """
+        Add a PNG text field namespaced by this channel
+
+        :param name: the key
+        :param value: the value
+        :return:
+        """
         cpngpack.pngpack_channel_add_textfield(self._c_channel, name.encode('UTF-8'), value.encode('UTF-8'))
 
 cdef class Pngpack:
     cdef cpngpack.pngpack* _c_pngpack
 
     def __init__(self, size_t width, size_t height, PngpackBounds bounds, str text_namespace):
+        """
+        Create a Pngpack object.
+        Channels can be added to this object, and then the PNG can be written to disk.
+
+        :param width: The width of the resulting image
+        :param height: The height of the resulting image
+        :param bounds: The bounds for the resulting image
+        :param text_namespace: Prefix to be used for all PNG text field names
+        """
         pass
 
     def __cinit__(self, size_t width, size_t height, PngpackBounds bounds, str text_namespace):
@@ -54,10 +85,18 @@ cdef class Pngpack:
             raise MemoryError()
 
     def add_channel(self, PngpackChannel channel):
+        """
+        Add a channel to this PNG file. This is non-reversible.
+        """
         channel._pngpack = True
         cpngpack.pngpack_add_channel(self._c_pngpack, channel._c_channel)
 
     def write(self, str path):
+        """
+        Write the packed PNG file to disk.
+
+        :param path: the path to write to
+        """
         return cpngpack.pngpack_write(self._c_pngpack, path.encode('UTF-8'))
 
     def __dealloc__(self):

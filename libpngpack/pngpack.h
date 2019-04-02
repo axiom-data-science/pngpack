@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include <assert.h>
 
 struct _pngpack_stats {
     double min;
@@ -60,10 +59,24 @@ struct pngpack {
 };
 
 
+/**
+ * Create a pngpack struct that serves as the basis for using libpngpack.
+ * Once created, channels can be added, and the result can be written to disk.
+ *
+ * @param width the width of the resulting image
+ * @param height the height of the resulting image
+ * @param bounds the bounds for the resulting image
+ * @param text_namespace a prefix to be used for all PNG text field names
+ * @return
+ */
 struct pngpack* pngpack_new(size_t width, size_t height, struct pngpack_bounds bounds, char *text_namespace);
 
 void pngpack_free(struct pngpack *pp);
 
+/**
+ * Add a channel to an instance of pngpack.
+ * This is non-reversible.
+ */
 void pngpack_add_channel(struct pngpack *pp, struct pngpack_channel *channel);
 
 /**
@@ -84,6 +97,13 @@ struct pngpack_channel* pngpack_channel_new(char *name, double *data, size_t dat
 
 void pngpack_channel_free(struct pngpack_channel *channel);
 
+/**
+ * Add a PNG text field representing metadata for this channel
+ *
+ * @param channel
+ * @param key the key associated with this text field, this will be within the channel's namespace
+ * @param value
+ */
 void pngpack_channel_add_textfield(struct pngpack_channel *channel, char *key, char *value);
 
 #endif

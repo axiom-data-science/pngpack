@@ -222,7 +222,7 @@ void pngpack_channel_pack(struct pngpack_channel *channel) {
     if (channel->stats.min < 0.0) {
         packed->is_signed = true;
         // reserve the lowest signed value for missing/nan
-        packed->nan = (uint16_t)(-(1 << (PNGPACK_BITS - 1)));
+        packed->nan = (uint16_t)(-(1u << (PNGPACK_BITS - 1u)));
         packed->add_offset = (channel->stats.max + channel->stats.min) / 2.0;
     } else {
         packed->is_signed = false;
