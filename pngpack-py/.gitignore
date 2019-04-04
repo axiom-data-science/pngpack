@@ -2,5 +2,5 @@ pngpack.c
 example.png
 build/
 *.so
-
+pngpack.egg-info/
 .idea/

@@ -20,6 +20,12 @@ cdef class PngpackBounds:
     cdef cpngpack.pngpack_bounds _c_bounds
 
     def __init__(self, double min_w, double max_w, double min_h, double max_h):
+        """
+        :param min_w:
+        :param max_w:
+        :param min_h:
+        :param max_h:
+        """
         self._c_bounds.min_w = min_w
         self._c_bounds.max_w = max_w
         self._c_bounds.min_h = min_h
@@ -60,7 +66,6 @@ cdef class PngpackChannel:
 
         :param name: the key
         :param value: the value
-        :return:
         """
         cpngpack.pngpack_channel_add_textfield(self._c_channel, name.encode('UTF-8'), value.encode('UTF-8'))
 
@@ -87,15 +92,18 @@ cdef class Pngpack:
     def add_channel(self, PngpackChannel channel):
         """
         Add a channel to this PNG file. This is non-reversible.
+
+        :param channel: The channel to add
         """
         channel._pngpack = True
         cpngpack.pngpack_add_channel(self._c_pngpack, channel._c_channel)
 
-    def write(self, str path):
+    def write(self, str path) -> bool:
         """
         Write the packed PNG file to disk.
 
         :param path: the path to write to
+        :return: boolean indicating success
         """
         return cpngpack.pngpack_write(self._c_pngpack, path.encode('UTF-8'))
 
