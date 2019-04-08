@@ -21,10 +21,12 @@ cdef class PngpackBounds:
 
     def __init__(self, double min_w, double max_w, double min_h, double max_h):
         """
-        :param min_w:
-        :param max_w:
-        :param min_h:
-        :param max_h:
+        Create an instance of PngpackBounds.
+
+        :param min_w: min_w value
+        :param max_w: max_w value
+        :param min_h: min_h value
+        :param max_h: max_h value
         """
         self._c_bounds.min_w = min_w
         self._c_bounds.max_w = max_w

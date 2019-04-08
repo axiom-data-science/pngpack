@@ -1,4 +1,6 @@
 example
 ==============
 
-TODO: include example.py code here
+.. literalinclude:: ../../example.py
+    :language: python
+    :linenos:
