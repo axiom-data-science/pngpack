@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>pngpack module &#8212; pngpack-py  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="example" href="example.html" />
+    <link rel="prev" title="pngpack-py documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pngpack">
+<span id="pngpack-module"></span><h1>pngpack module<a class="headerlink" href="#module-pngpack" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="pngpack.Pngpack">
+<em class="property">class </em><code class="descclassname">pngpack.</code><code class="descname">Pngpack</code><a class="headerlink" href="#pngpack.Pngpack" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pngpack.Pngpack.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#pngpack.Pngpack.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Pngpack object.
+Channels can be added to this object, and then the PNG can be written to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> – The width of the resulting image</p></li>
+<li><p><strong>height</strong> – The height of the resulting image</p></li>
+<li><p><strong>bounds</strong> – The bounds for the resulting image</p></li>
+<li><p><strong>text_namespace</strong> – Prefix to be used for all PNG text field names</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pngpack.Pngpack.add_channel">
+<code class="descname">add_channel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pngpack.Pngpack.add_channel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a channel to this PNG file. This is non-reversible.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>channel</strong> – The channel to add</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pngpack.Pngpack.write">
+<code class="descname">write</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pngpack.Pngpack.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the packed PNG file to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> – the path to write to</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>boolean indicating success</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pngpack.PngpackBounds">
+<em class="property">class </em><code class="descclassname">pngpack.</code><code class="descname">PngpackBounds</code><a class="headerlink" href="#pngpack.PngpackBounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object representing the bounds of a packed PNG file.
+These bounds represent the top-left and bottom-right pixels
+of the image, and allow you to give context to the packed data.</p>
+<p>For example, if the packed data represented temperatures over a grid,
+the bounds may represent the max/min lat/lon of the grid.</p>
+<dl class="attribute">
+<dt id="pngpack.PngpackBounds.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#pngpack.PngpackBounds.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of PngpackBounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>min_w</strong> – min_w value</p></li>
+<li><p><strong>max_w</strong> – max_w value</p></li>
+<li><p><strong>min_h</strong> – min_h value</p></li>
+<li><p><strong>max_h</strong> – max_h value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pngpack.PngpackChannel">
+<em class="property">class </em><code class="descclassname">pngpack.</code><code class="descname">PngpackChannel</code><a class="headerlink" href="#pngpack.PngpackChannel" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="pngpack.PngpackChannel.__init__">
+<code class="descname">__init__</code><a class="headerlink" href="#pngpack.PngpackChannel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a channel to be added to a Pngpack object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – A name/label to be stored as metadata</p></li>
+<li><p><strong>data</strong> – The data, as floating point values. This data will be copied.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="pngpack.PngpackChannel.add_textfield">
+<code class="descname">add_textfield</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pngpack.PngpackChannel.add_textfield" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a PNG text field namespaced by this channel</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the key</p></li>
+<li><p><strong>value</strong> – the value</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">pngpack-py</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pngpack module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">example</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">pngpack-py documentation</a></li>
+      <li>Next: <a href="example.html" title="next chapter">example</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Axiom Data Science.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
