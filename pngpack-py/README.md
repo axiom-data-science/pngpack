@@ -2,7 +2,7 @@
 
 Python 3 wrapper around libpngpack.
 
-See the full [documentation](https://axiom-data-science.github.io/pngpack/pngpack-py/html/).
+See the [API reference](https://axiom-data-science.github.io/pngpack/pngpack-py/html/).
 
 ***
 
