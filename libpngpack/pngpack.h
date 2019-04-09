@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+/**
+ * @file
+ * @brief This is the interface to libpngpack
+ */
+
+
 struct _pngpack_stats {
     double min;
     double max;
