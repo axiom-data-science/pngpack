@@ -8,6 +8,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 
 setup(name='pngpack',
       version='1.0.0',
+      url='https://github.com/axiom-data-science/pngpack/',
       packages=find_packages(),
       ext_modules=cythonize(
           [
@@ -18,4 +19,8 @@ setup(name='pngpack',
           ],
           compiler_directives={'language_level': '3'},
       ),
-      zip_safe=False)
+      zip_safe=False,
+      classifiers=[
+          "Programming Language :: Python :: 3",
+          "License :: OSI Approved :: MIT License",
+      ])
