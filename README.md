@@ -5,19 +5,21 @@ It supports 1-4 channels per image, storing metadata as PNG tEXt chunks.
 Metadata includes global bounds to give the image context, values to allow
 unpacking each channel by a client, and statistics for each channel.
 
-There are 2 parts to pngpack: libpngpack, the C library, and pngpack-py,
-the Python module which wraps libpngpack.
+There are 2 parts to pngpack: [libpngpack](libpngpack/), the C library, and
+[pngpack-py](pngpack-py/), the Python module which wraps libpngpack.
 
 pngpack depends on libpng.
 
 ## Usage
 
-To use pngpack, you initialize a pngpack instance, initialize channels for
-each array you wish to pack, optionally add additional metadata to each
-channel, add the channels to the pngpack instance.
-Then you can write the PNG to disk.
+See the [libpngpack](libpngpack/) or [pngpack-py](pngpack-py/) README files
+for specific instructions for each library.
 
-There is an example file doing just this in both libpngpack and pngpack-py.
+At a high level, to use pngpack, you initialize a pngpack instance, initialize
+channels for each array you wish to pack, optionally add additional metadata
+to each channel, add the channels to the pngpack instance.
+Then you can write the PNG to disk.
+The example file in each library shows how to do just this.
 
 ### Usage notes:
 
