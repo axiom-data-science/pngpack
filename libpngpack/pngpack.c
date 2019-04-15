@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <png.h>
 #include <float.h>
-
+#include <arpa/inet.h>
 
 #define PNGPACK_BITS 16
 

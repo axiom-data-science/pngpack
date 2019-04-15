@@ -3,6 +3,8 @@ project(pngpack C)
 
 set(CMAKE_C_STANDARD 11)
 
+add_definitions(-D_GNU_SOURCE)
+
 add_library(pngpack SHARED
         pngpack.c pngpack.h)
 

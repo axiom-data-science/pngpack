@@ -1,6 +1,10 @@
+.idea/
+
 pngpack.c
 example.png
-build/
+
 *.so
+build/
 pngpack.egg-info/
-.idea/
+pngpack_py.egg-info/
+dist/

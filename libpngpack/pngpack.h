@@ -2,6 +2,7 @@
 #define PNGPACK_LIBRARY_H
 
 #include <stdlib.h>
+#include <inttypes.h>
 #include <stdbool.h>
 
 /**
