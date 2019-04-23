@@ -59,7 +59,10 @@
 24
 25
 26
-27</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pngpack</span>
+27
+28
+29
+30</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pngpack</span>
 
 <span class="c1"># determine image size and data</span>
 <span class="n">width</span> <span class="o">=</span> <span class="mi">3</span>
@@ -74,6 +77,9 @@
 
 <span class="c1"># initialize pngpack with size and bounds</span>
 <span class="n">pp</span> <span class="o">=</span> <span class="n">pngpack</span><span class="o">.</span><span class="n">Pngpack</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="s2">&quot;pp-example&quot;</span><span class="p">)</span>
+
+<span class="c1"># add global metadata</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">add_textfield</span><span class="p">(</span><span class="s2">&quot;is_example&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span>
 
 <span class="c1"># create a channel with the data</span>
 <span class="n">channel</span> <span class="o">=</span> <span class="n">pngpack</span><span class="o">.</span><span class="n">PngpackChannel</span><span class="p">(</span><span class="s1">&#39;temp&#39;</span><span class="p">,</span> <span class="n">temp_data</span><span class="p">)</span>
