@@ -91,6 +91,15 @@ cdef class Pngpack:
         if self._c_pngpack is NULL:
             raise MemoryError()
 
+    def add_textfield(self, str name, str value):
+        """
+        Add a PNG text field to this instance
+
+        :param name: the key
+        :param value: the value
+        """
+        cpngpack.pngpack_add_textfield(self._c_pngpack, name.encode('UTF-8'), value.encode('UTF-8'))
+
     def add_channel(self, PngpackChannel channel):
         """
         Add a channel to this PNG file. This is non-reversible.

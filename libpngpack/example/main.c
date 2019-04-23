@@ -12,6 +12,8 @@ int main() {
 
     struct pngpack *pp = pngpack_new(width, height, bounds, "pp-example");
 
+    pngpack_add_textfield(pp, "is_example", "1");
+
     double ch1_data[] = {70, 65, 68,
                          72, 85, 80,
                          85, 87, 75};

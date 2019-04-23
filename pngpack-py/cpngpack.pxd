@@ -12,6 +12,7 @@ cdef extern from "../libpngpack/pngpack.h":
     pngpack* pngpack_new(size_t width, size_t height, pngpack_bounds bounds, char *text_namespace)
     void pngpack_free(pngpack *pp)
 
+    void pngpack_add_textfield(pngpack *pp, char *key, char *value);
     void pngpack_add_channel(pngpack *pp, pngpack_channel *channel)
     bint pngpack_write(pngpack *pp, char *path)
 

@@ -63,6 +63,8 @@ struct pngpack {
 
     struct pngpack_channel *channels[4];
     size_t channels_length;
+
+    struct _pngpack_textfield_container *textfields;
 };
 
 
@@ -85,6 +87,15 @@ void pngpack_free(struct pngpack *pp);
  * This is non-reversible.
  */
 void pngpack_add_channel(struct pngpack *pp, struct pngpack_channel *channel);
+
+/**
+ * Add a PNG text field to the output file
+ *
+ * @param pp pngpack instance
+ * @param key the key associated with this text field
+ * @param value
+ */
+void pngpack_add_textfield(struct pngpack *pp, char *key, char *value);
 
 /**
  * Write the resulting png file to the given path

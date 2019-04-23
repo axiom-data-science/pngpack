@@ -14,6 +14,9 @@ bounds = pngpack.PngpackBounds(0, 360, -180, 180)
 # initialize pngpack with size and bounds
 pp = pngpack.Pngpack(width, height, bounds, "pp-example")
 
+# add global metadata
+pp.add_textfield("is_example", "1")
+
 # create a channel with the data
 channel = pngpack.PngpackChannel('temp', temp_data)
 # add optional metadata

@@ -32,6 +32,7 @@ struct pngpack* pngpack_new(size_t width, size_t height, struct pngpack_bounds b
     pp->channels[2] = NULL;
     pp->channels[3] = NULL;
     pp->channels_length = 0;
+    pp->textfields = _pngpack_textfield_container_new();
     return pp;
 }
 
@@ -39,6 +40,7 @@ void pngpack_free(struct pngpack *pp) {
     for (size_t i = 0; i < pp->channels_length; i += 1) {
         pngpack_channel_free(pp->channels[i]);
     }
+    _pngpack_textfield_container_free(pp->textfields);
     free(pp->text_namespace);
     free(pp);
 }
@@ -46,6 +48,10 @@ void pngpack_free(struct pngpack *pp) {
 void pngpack_add_channel(struct pngpack *pp, struct pngpack_channel *channel) {
     assert(pp->channels_length < 4);
     pp->channels[pp->channels_length++] = channel;
+}
+
+void pngpack_add_textfield(struct pngpack *pp, char *key, char *value) {
+    _pngpack_textfield_container_add_textfield(pp->textfields, key, value);
 }
 
 bool pngpack_write(struct pngpack *pp, char *path) {
@@ -90,9 +96,12 @@ bool pngpack_write(struct pngpack *pp, char *path) {
 
     /**
      * 4 fields for bounds
+     * plus any global fields
      * plus any fields for each channel (including any default fields, such as packed attributes and stats)
      */
     size_t metadata_fields_length = 4;
+
+    metadata_fields_length += pp->textfields->length;
 
     for (size_t c = 0; c < pp->channels_length; c += 1) {
         metadata_fields_length += pp->channels[c]->textfields->length;
@@ -132,6 +141,15 @@ bool pngpack_write(struct pngpack *pp, char *path) {
     free(metadata_text), metadata_text = NULL;
     free(metadata_key), metadata_key = NULL;
 
+    struct _pngpack_textfield *textfield = pp->textfields->first;
+    for (size_t i = 0; i < pp->textfields->length; i += 1) {
+        asprintf(&metadata_key, "%s:%s", pp->text_namespace, textfield->key);
+        metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, textfield->value);
+        free(metadata_key), metadata_key = NULL;
+
+        textfield = textfield->next;
+    }
+
     /**
      * channel attributes
      */
@@ -139,7 +157,7 @@ bool pngpack_write(struct pngpack *pp, char *path) {
     for (size_t c = 0; c < pp->channels_length; c += 1) {
         struct pngpack_channel *channel = pp->channels[c];
 
-        struct _pngpack_textfield *textfield = channel->textfields->first;
+        textfield = channel->textfields->first;
         for (size_t i = 0; i < channel->textfields->length; i += 1) {
             asprintf(&metadata_key, "%s:channel:%lu:%s", pp->text_namespace, c, textfield->key);
             metadata_fields[metadata_i++] = pngpack_png_text_struct_new(metadata_key, textfield->value);
